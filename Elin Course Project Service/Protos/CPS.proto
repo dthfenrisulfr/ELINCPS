@@ -2,26 +2,28 @@ syntax = "proto3";
 
 option csharp_namespace = "Elin_Course_Project_Service";
 
+package CPS;
+
 service ELIN_CPS {
   rpc GetOneFromStaff (StaffRequest) returns (Staff);
-  rpc GetOneFromPosition (PositionRequest) returns (Position);
-  rpc GetOneFromDepartment (DepartmentRequest) returns (Department);
+  rpc GetOneFromPosition (PositionRequest) returns (Positions);
+  rpc GetOneFromDepartment (DepartmentRequest) returns (Departments);
 
   rpc GetStaffList (StaffRequest) returns (stream Staff);
-  rpc GetPositionList (PositionRequest) returns (stream Position);
-  rpc GetDepartmentList (DepartmentRequest) returns (stream Department);
+  rpc GetPositionList (PositionRequest) returns (stream Positions);
+  rpc GetDepartmentList (DepartmentRequest) returns (stream Departments);
 
   rpc AddStaff (Staff) returns (Response);
-  rpc AddPosition (Position) returns (Response);
-  rpc AddDepartment (Department) returns (Response);
+  rpc AddPosition (Positions) returns (Response);
+  rpc AddDepartment (Departments) returns (Response);
 
   rpc DeleteStaff (StaffRequest) returns (Response);
   rpc DeletePosition (PositionRequest) returns (Response);
   rpc DeleteSDepartment (DepartmentRequest) returns (Response);
 
   rpc UpdateStaff (Staff) returns (Response);
-  rpc UpdatePosition (Position) returns (Response);
-  rpc UpdateDepartment (Department) returns (Response);
+  rpc UpdatePosition (Positions) returns (Response);
+  rpc UpdateDepartment (Departments) returns (Response);
 }
 message Staff {
   int32 Passport = 1;
@@ -36,21 +38,21 @@ message Staff {
 message StaffRequest {
   int32 Passport = 1;
 }
-message Position {
-  int32 Position_ID = 1;
+message Positions {
+  int32 PositionID = 1;
   string Position = 2;
   string Salary = 3;
 }
 message PositionRequest {
-  int32 Position_ID = 1;
+  int32 PositionID = 1;
 }
-message Department {
-  int32 Department_ID = 1;
+message Departments {
+  int32 DepartmentID = 1;
   string Department = 2;
   int32 NumberOfEmployees = 3;
 }
 message DepartmentRequest {
-  int32 Department_ID = 1;
+  int32 DepartmentID = 1;
 }
 message Response {
 	enum ModificationResponse {

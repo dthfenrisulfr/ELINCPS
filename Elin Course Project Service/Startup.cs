@@ -7,14 +7,23 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace Elin_Course_Project_Service
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            services.AddDbContext<DBContexts.WindowsDBContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("WindowsDataBase")));
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
