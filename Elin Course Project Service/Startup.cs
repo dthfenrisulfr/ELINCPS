@@ -22,8 +22,9 @@ namespace Elin_Course_Project_Service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            services.AddDbContext<DBContexts.WindowsDBContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("WindowsDataBase")));
+            //    services.AddDbContext<DBContexts.WindowsDBContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("WindowsDataBase")));
+            //}
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

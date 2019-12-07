@@ -19,7 +19,7 @@ service ELIN_CPS {
 
   rpc DeleteStaff (StaffRequest) returns (Response);
   rpc DeletePosition (PositionRequest) returns (Response);
-  rpc DeleteSDepartment (DepartmentRequest) returns (Response);
+  rpc DeleteDepartment (DepartmentRequest) returns (Response);
 
   rpc UpdateStaff (Staff) returns (Response);
   rpc UpdatePosition (Positions) returns (Response);
@@ -41,7 +41,7 @@ message StaffRequest {
 message Positions {
   int32 PositionID = 1;
   string Position = 2;
-  string Salary = 3;
+  double Salary = 3;
 }
 message PositionRequest {
   int32 PositionID = 1;
@@ -54,8 +54,7 @@ message Departments {
 message DepartmentRequest {
   int32 DepartmentID = 1;
 }
-message Response {
-	enum ModificationResponse {
+	enum ResponseEnum {
 		UNKNOWN = 0;
 		ADD_OK = 1;
 		ADD_FAIL = 2;
@@ -64,4 +63,6 @@ message Response {
 		UPDATE_OK = 5;
 		UPDATE_FAIL = 6;
 	}
+message Response {
+	ResponseEnum ResponseMessage = 1;
 }
