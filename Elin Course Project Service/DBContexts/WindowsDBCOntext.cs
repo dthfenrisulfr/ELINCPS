@@ -12,6 +12,11 @@ namespace Elin_Course_Project_Service.DBContexts
         public DbSet<Staff> Staff { get; set; }
         public DbSet<Departments> Departments { get; set; }
         public DbSet<Positions> Positions { get; set; }
+        public DbSet<Customers> Customers { get; set; }
+        public DbSet<Products> Products { get; set; }
+        public DbSet<Orders> Orders { get; set; }
+        public DbSet<Models.ProductsToOrders> ProductsToOrders {get;set;}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
@@ -26,6 +31,12 @@ namespace Elin_Course_Project_Service.DBContexts
                 .HasKey(c => c.Passport);
             modelBuilder.Entity<Departments>()
                 .HasKey(c => c.DepartmentID);
+            modelBuilder.Entity<Customers>()
+                .HasKey(x => x.CustomerID);
+            modelBuilder.Entity<Orders>()
+                .HasKey(x => x.OrderID);
+            modelBuilder.Entity<Products>()
+                .HasKey(x => x.ProductID);
         }
     }
 }

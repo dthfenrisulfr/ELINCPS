@@ -8,31 +8,81 @@ service ELIN_CPS {
   rpc GetOneFromStaff (StaffRequest) returns (Staff);
   rpc GetOneFromPosition (PositionRequest) returns (Positions);
   rpc GetOneFromDepartment (DepartmentRequest) returns (Departments);
+  rpc GetOneFormCustomers (CustomerRequest) returns (Customers); 
+  rpc GetOneFromOrders (OrderRequest) returns (Orders);
 
+  rpc GetOrderList (OrderRequest) returns (stream Orders);
+  rpc GetProductList (ProductRequest) returns (stream Products);
+  rpc GetCustomersList (CustomerRequest) returns (stream Customers);
   rpc GetStaffList (StaffRequest) returns (stream Staff);
   rpc GetPositionList (PositionRequest) returns (stream Positions);
   rpc GetDepartmentList (DepartmentRequest) returns (stream Departments);
 
+  rpc AddOrder (Orders) returns (Response);
   rpc AddStaff (Staff) returns (Response);
+  rpc AddSCustomer (Customers) returns (Response);
+  rpc AddProduct (Products) returns (Response);
   rpc AddPosition (Positions) returns (Response);
   rpc AddDepartment (Departments) returns (Response);
 
+  rpc DeleteOrder (OrderRequest) returns (Response);
+  rpc DeleteCustomer (CustomerRequest) returns (Response);
+  rpc DeleteProduct (ProductRequest) returns (Response);
   rpc DeleteStaff (StaffRequest) returns (Response);
   rpc DeletePosition (PositionRequest) returns (Response);
   rpc DeleteDepartment (DepartmentRequest) returns (Response);
 
+  rpc UpdateOrder (Orders) returns (Response);
+  rpc UpdateCustomer (Customers) returns (Response);
+  rpc UpdateProduct (Products) returns (Response);
   rpc UpdateStaff (Staff) returns (Response);
   rpc UpdatePosition (Positions) returns (Response);
   rpc UpdateDepartment (Departments) returns (Response);
 }
+message Customers{
+	int32 CustomerID = 1;
+	string PaymentAccount = 2;
+	int64 DateOfContractCompletion = 3;
+}
+message CustomerRequest{
+	int32 CustomerID = 1;
+}
+message Products{
+	int32 ProductID = 1;
+	string ProductName = 2;
+	int32 NumberOfGlasses = 3;
+	double Width = 4;
+	double Heght = 5;
+	double Weight = 6;
+}
+message ProductRequest{
+	int32 ProductID = 1;
+}
+message OrderRequest{
+	int32 OrderID = 1;
+}
+message Orders{
+	int32 OrderID = 1;
+	int32 CustomerID = 2;
+	int64 Date = 4;
+	Products AllProducts = 5;
+	Conditions Condition = 6;
+}
+ enum Conditions{
+ 	 UNKNOWNCondition = 0;
+	 IsBeingPrepared = 1;
+	 Performing = 2;
+	 Done = 3;
+ }
+
 message Staff {
   int32 Passport = 1;
   string Name = 2;
   string SecondName = 3;
   string MiddleName = 4;
-  string BDate = 5;
+  int64 BDate = 5;
   string Gender = 6;
-  string DateOfReceipt = 7;
+  int64 DateOfReceipt = 7;
   string Experience = 8;
 }
 message StaffRequest {
