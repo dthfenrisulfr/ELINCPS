@@ -222,7 +222,14 @@ namespace Elin_Course_Project_Service.Services
                 foreach (var t in temp)
                 {
                     var tmp = t.DateOfContractCompletion.Ticks;
-                    customers.Add(new Customers{ CustomerID = t.CustomerID, DateOfContractCompletion = tmp, PaymentAccount = t.PaymentAccount });
+                    var customerInfo = cnt.CustomerInfo.Single(x => x.CustomerID == t.CustomerID);
+                    customers.Add(new Customers{ CustomerID = t.CustomerID, 
+                        DateOfContractCompletion = tmp, 
+                        PaymentAccount = t.PaymentAccount, 
+                        Address = customerInfo.Address, 
+                        Name = customerInfo.Name, 
+                        Organization = customerInfo.Organization, 
+                        SecondName = customerInfo.SecondName });
                 }
                 foreach (var response in customers)
                 {
