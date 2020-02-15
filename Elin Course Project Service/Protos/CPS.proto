@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-option csharp_namespace = "Elin_Course_Project_Service";
-
 package CPS;
 
 service ELIN_CPS {
@@ -41,8 +39,12 @@ service ELIN_CPS {
 }
 message Customers{
 	int32 CustomerID = 1;
-	string PaymentAccount = 2;
-	int64 DateOfContractCompletion = 3;
+    string Name = 2;
+    string SecondName = 3;
+    string Organization = 4;
+    string Address = 5;
+	string PaymentAccount = 6;
+	int64 DateOfContractCompletion = 7;
 }
 message CustomerRequest{
 	int32 CustomerID = 1;
@@ -63,17 +65,11 @@ message OrderRequest{
 }
 message Orders{
 	int32 OrderID = 1;
-	int32 CustomerID = 2;
+	Customers Customer = 2;
 	int64 Date = 4;
-	Products AllProducts = 5;
-	Conditions Condition = 6;
+	string AllProducts = 5;
+	string Condition = 6;
 }
- enum Conditions{
- 	 UNKNOWNCondition = 0;
-	 IsBeingPrepared = 1;
-	 Performing = 2;
-	 Done = 3;
- }
 
 message Staff {
   int32 Passport = 1;
@@ -84,6 +80,8 @@ message Staff {
   string Gender = 6;
   int64 DateOfReceipt = 7;
   string Experience = 8;
+  string Department = 9;
+  string Position = 10;
 }
 message StaffRequest {
   int32 Passport = 1;
