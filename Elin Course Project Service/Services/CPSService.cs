@@ -32,7 +32,8 @@ namespace Elin_Course_Project_Service.Services
             Positions position = new Positions();
             try
             {
-                position = cnt.Positions.Single(x=>x.PositionID == request.PositionID);
+                position = cnt.Positions.Where(x=>x.PositionID == request.PositionID).FirstOrDefault();
+                return Task.FromResult(position);
             }
             catch(Exception e)
             {
@@ -43,7 +44,6 @@ namespace Elin_Course_Project_Service.Services
             {
                 cnt.Dispose();
             }
-            return Task.FromResult(position);
         }
         /// <summary>
         ///  В качестве ответа на запрос по ID метод отправляет информацию о сотруднике
@@ -51,21 +51,37 @@ namespace Elin_Course_Project_Service.Services
         public override Task<Staff> GetOneFromStaff(StaffRequest request, ServerCallContext context)
         {
             var cnt = new DBContexts.WindowsDBContext();
-            Staff staff = new Staff();
             try
             {
-                //staff = cnt.Staff.Single(x => x.Passport == request.Passport);
+                var staff = cnt.Staff.Where(x => x.Passport == request.Passport).FirstOrDefault();
+                var position = cnt.Positions.Where(x => x.PositionID == staff.PositionID).FirstOrDefault();
+                var depatment = cnt.Departments.Where(x => x.DepartmentID == staff.DepartmentID).FirstOrDefault();
+                var bDate = staff.BDate.Ticks;
+                var rDate = staff.DateOfReceipt.Ticks;
+                var rpcStaff = new Staff
+                {
+                    BDate = bDate,
+                    DateOfReceipt = rDate,
+                    Department = depatment.Department,
+                    Experience = staff.Experience,
+                    Gender = staff.Gender,
+                    MiddleName = staff.MiddleName,
+                    Name = staff.Name,
+                    Passport = staff.Passport,
+                    Position = position.Position,
+                    SecondName = staff.SecondName
+                };
+                return Task.FromResult(rpcStaff);
             }
             catch (Exception e)
             {
                 _logger.LogWarning($"Ошибка в методе GetOneFromStaff {e.Message}" + '\n' + "Stack:" + '\n' + e.ToString());
-                return Task.FromResult(staff);
+                return Task.FromResult(new Staff());
             }
             finally
             {
                 cnt.Dispose();
             }
-            return Task.FromResult(staff);
         }
         /// <summary>
         ///  В качестве ответа на запрос по ID метод отправляет информацию об отделе
@@ -76,7 +92,7 @@ namespace Elin_Course_Project_Service.Services
             Departments departments = new Departments();
             try
             {
-                departments = cnt.Departments.Single(x => x.DepartmentID == request.DepartmentID);
+                departments = cnt.Departments.Where(x => x.DepartmentID == request.DepartmentID).FirstOrDefault();
             }
             catch (Exception e)
             {
@@ -95,28 +111,92 @@ namespace Elin_Course_Project_Service.Services
         public override Task<Customers> GetOneFormCustomers(CustomerRequest request, ServerCallContext context)
         {
             var cnt = new DBContexts.WindowsDBContext();
-            Customers customers = new Customers();
             try
             {
-                //customers = cnt.Customers.Single(x => x.CustomerID == request.CustomerID);
+                var customer = cnt.Customers.Single(x => x.CustomerID == request.CustomerID);
+                var date = customer.DateOfContractCompletion.Ticks;
+                var rpcCustomer = new Customers
+                {
+                    Address = customer.Address,
+                    CustomerID = customer.CustomerID,
+                    DateOfContractCompletion = date,
+                    Name = customer.Name,
+                    Organization = customer.Organization,
+                    PaymentAccount = customer.PaymentAccount,
+                    SecondName = customer.SecondName
+                };
+                return Task.FromResult(rpcCustomer);
             }
             catch (Exception e)
             {
                 _logger.LogWarning($"Ошибка в методе GetOneFormCustomers {e.Message}" + '\n' + "Stack:" + '\n' + e.ToString());
-                return Task.FromResult(customers);
+                return Task.FromResult(new Customers());
             }
             finally
             {
                 cnt.Dispose();
             }
-            return Task.FromResult(customers);
         }
         /// <summary>
         ///  В качестве ответа на запрос по ID метод отправляет информацию о заказе
         /// </summary>
-        public override Task<Orders> GetOneFromOrders(OrderRequest request, ServerCallContext context)
+        public override async Task<Orders> GetOneFromOrders(OrderRequest request, ServerCallContext context)
         {
-            return base.GetOneFromOrders(request, context);
+            var cnt = new DBContexts.WindowsDBContext();
+            try
+            {
+                var order = cnt.Orders.Where(x => x.OrderID == request.OrderID).FirstOrDefault();
+                var prodToOrder = cnt.ProductsToOrders.Where(x => x.OrderID == order.OrderID);
+                var date = order.Date.Ticks;
+                var customer = cnt.Customers.Where(x => x.CustomerID == order.CustomerID).FirstOrDefault();
+                string products = "";
+                foreach(var prod in prodToOrder)
+                {
+                    var temp = cnt.Products.Where(x => x.ProductID == prod.ProductID).FirstOrDefault().ProductName + ' ';
+                    products += temp;
+                }
+                var rpcOrder = new Orders
+                {
+                    OrderID = order.OrderID,
+                    AllProducts = products,
+                    Condition = order.Condition,
+                    Customer = await GetOneFormCustomers(new CustomerRequest { CustomerID = order.CustomerID }, context),
+                    Date = date,
+                    Staff = await GetOneFromStaff(new StaffRequest { Passport = order.StaffID }, context)
+                };
+                return rpcOrder;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning($"Ошибка в методе GetOneFromProducts {e.Message}" + '\n' + "Stack:" + '\n' + e.ToString());
+                return null;
+            }
+            finally
+            {
+                cnt.Dispose();
+            }
+        }
+        /// <summary>
+        ///  В качестве ответа на запрос по ID метод отправляет информацию о продукте
+        /// </summary>
+        public override Task<Products> GetOneFromProducts(ProductRequest request, ServerCallContext context)
+        {
+            var cnt = new DBContexts.WindowsDBContext();
+            Products products = new Products();
+            try
+            {
+                products = cnt.Products.Where(x => x.ProductID == request.ProductID).FirstOrDefault();
+                return Task.FromResult(products);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning($"Ошибка в методе GetOneFromProducts {e.Message}" + '\n' + "Stack:" + '\n' + e.ToString());
+                return Task.FromResult(products);
+            }
+            finally
+            {
+                cnt.Dispose();
+            }
         }
 
 
@@ -222,14 +302,13 @@ namespace Elin_Course_Project_Service.Services
                 foreach (var t in temp)
                 {
                     var tmp = t.DateOfContractCompletion.Ticks;
-                    var customerInfo = cnt.CustomerInfo.Single(x => x.CustomerID == t.CustomerID);
                     customers.Add(new Customers{ CustomerID = t.CustomerID, 
                         DateOfContractCompletion = tmp, 
                         PaymentAccount = t.PaymentAccount, 
-                        Address = customerInfo.Address, 
-                        Name = customerInfo.Name, 
-                        Organization = customerInfo.Organization, 
-                        SecondName = customerInfo.SecondName });
+                        Address = t.Address, 
+                        Name = t.Name, 
+                        Organization = t.Organization, 
+                        SecondName = t.SecondName });
                 }
                 foreach (var response in customers)
                 {
@@ -290,17 +369,32 @@ namespace Elin_Course_Project_Service.Services
                         productList += cnt.Products.Single(x=>x.ProductID == prod).ProductName  + ", ";
                     }
                     var order = cnt.Orders.Where(x=>x.OrderID == i).FirstOrDefault();
-                    var cutomerInfo = cnt.CustomerInfo.Single(x => x.CustomerID == order.CustomerID);
-                    var customer = cnt.Customers.Single(x => x.CustomerID == order.CustomerID);
-                    var customerWithInfo = new Customers{ CustomerID = order.CustomerID, 
-                        Address = cutomerInfo.Address, 
-                        DateOfContractCompletion = customer.DateOfContractCompletion.Ticks, 
-                        Name = cutomerInfo.Name, 
-                        Organization = cutomerInfo.Organization, 
-                        PaymentAccount = customer.PaymentAccount, 
-                        SecondName = cutomerInfo.SecondName };
+                    Models.CustomersModel customer = new Models.CustomersModel();
+                    if (order != null)
+                    {
+                        customer = cnt.Customers.Where(x => x.CustomerID == order.CustomerID).FirstOrDefault();
+                        var customerWithInfo = new Customers
+                        {
+                            CustomerID = order.CustomerID,
+                            Address = customer.Address,
+                            DateOfContractCompletion = customer.DateOfContractCompletion.Ticks,
+                            Name = customer.Name,
+                            Organization = customer.Organization,
+                            PaymentAccount = customer.PaymentAccount,
+                            SecondName = customer.SecondName
+                        };
+                        var staff = cnt.Staff.Single(x => x.Passport == order.StaffID);
 
-                    orders.Add(new Orders { OrderID = i, Customer = customerWithInfo, AllProducts = productList, Condition = order.Condition, Date = order.Date.Ticks });
+                        orders.Add(new Orders
+                        {
+                            OrderID = i,
+                            Customer = customerWithInfo,
+                            AllProducts = productList,
+                            Condition = order.Condition,
+                            Date = order.Date.Ticks,
+                            Staff = Converter.StaffConverter.ToStaff(staff)
+                        });
+                    }
                 }
                 foreach (var response in orders)
                 {
@@ -377,7 +471,9 @@ namespace Elin_Course_Project_Service.Services
             var cnt = new DBContexts.WindowsDBContext();
             try
             {
-                //cnt.Staff.Add(request);
+                var newStaff = Converter.StaffConverter.ToStaffModel(request);
+
+                cnt.Staff.Add(newStaff);
                 cnt.SaveChanges();
                 response.ResponseMessage = ResponseEnum.AddOk;
             }
@@ -398,7 +494,41 @@ namespace Elin_Course_Project_Service.Services
         /// </summary>
         public override Task<Response> AddOrder(Orders request, ServerCallContext context)
         {
-            return base.AddOrder(request, context);
+            Response response = new Response();
+            var cnt = new DBContexts.WindowsDBContext();
+            try
+            {
+                var date = new DateTime(request.Date);
+                var order = new Models.OrderModel
+                {
+                    Condition = request.Condition, 
+                    CustomerID = request.Customer.CustomerID, 
+                    Date = date, 
+                    StaffID = request.Staff.Passport 
+                };
+                cnt.Orders.Add(order);
+                cnt.SaveChanges();
+                var maxID = cnt.Orders.Select(x => x.OrderID).Max();
+                var updatedOrder = cnt.Orders.Where(x => x.OrderID == maxID).FirstOrDefault();
+                var products = request.AllProducts.Split(',');
+                foreach(var prod in products)
+                {
+                    cnt.ProductsToOrders.Add(new Models.ProductsToOrders { OrderID = updatedOrder.OrderID, ProductID = Convert.ToInt32(prod) });
+                    cnt.SaveChanges();
+                }
+                response.ResponseMessage = ResponseEnum.AddOk;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning($"Ошибка в методе AddOrder {e.Message}" + '\n' + "Stack:" + '\n' + e.ToString());
+                response.ResponseMessage = ResponseEnum.AddFail;
+                return Task.FromResult(response);
+            }
+            finally
+            {
+                cnt.Dispose();
+            }
+            return Task.FromResult(response);
         }
         /// <summary>
         ///  Полученный по HTTP\2 продукт помещает в БД
@@ -434,7 +564,17 @@ namespace Elin_Course_Project_Service.Services
             var cnt = new DBContexts.WindowsDBContext();
             try
             {
-                //cnt.Customers.Add(request);
+                var date = new DateTime(request.DateOfContractCompletion);
+                var customer = new Models.CustomersModel
+                {
+                    Name = request.Name, 
+                    Address = request.Address, 
+                    DateOfContractCompletion = date, 
+                    Organization = request.Organization, 
+                    PaymentAccount = request.PaymentAccount, 
+                    SecondName = request.SecondName
+                };
+                cnt.Customers.Add(customer);
                 cnt.SaveChanges();
                 response.ResponseMessage = ResponseEnum.AddOk;
             }
@@ -531,39 +671,6 @@ namespace Elin_Course_Project_Service.Services
             return Task.FromResult(response);
         }
         /// <summary>
-        ///  В качестве ответа на запрос по ID метод удаляет заказчика
-        /// </summary>
-        public override Task<Response> DeleteCustomer(CustomerRequest request, ServerCallContext context)
-        {
-            Response response = new Response();
-            var cnt = new DBContexts.WindowsDBContext();
-            try
-            {
-                var delCustomer = cnt.Customers.Single(x => x.CustomerID == request.CustomerID);
-                cnt.Customers.Remove(delCustomer);
-                cnt.SaveChanges();
-                response.ResponseMessage = ResponseEnum.DeleteOk;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning($"Ошибка в методе DeleteCustomer {e.Message}" + '\n' + "Stack:" + '\n' + e.ToString());
-                response.ResponseMessage = ResponseEnum.DeleteFail;
-                return Task.FromResult(response);
-            }
-            finally
-            {
-                cnt.Dispose();
-            }
-            return Task.FromResult(response);
-        }
-        /// <summary>
-        ///  В качестве ответа на запрос по ID метод удаляет заказ
-        /// </summary>
-        public override Task<Response> DeleteOrder(OrderRequest request, ServerCallContext context)
-        {
-            return base.DeleteOrder(request, context);
-        }
-        /// <summary>
         ///  В качестве ответа на запрос по ID метод удаляет товар
         /// </summary>
         public override Task<Response> DeleteProduct(ProductRequest request, ServerCallContext context)
@@ -600,9 +707,10 @@ namespace Elin_Course_Project_Service.Services
             var cnt = new DBContexts.WindowsDBContext();
             try
             {
-                var temp = cnt.Positions.Single(x => x.PositionID == request.PositionID);
-                cnt.Remove(temp);
-                cnt.Positions.Add(request);
+                var temp = cnt.Positions.Single(x=>x.PositionID == request.PositionID);
+                temp.Position = request.Position;
+                temp.Salary = request.Salary;
+                cnt.Update(temp);
                 cnt.SaveChanges();
                 response.ResponseMessage = ResponseEnum.UpdateOk;
             }

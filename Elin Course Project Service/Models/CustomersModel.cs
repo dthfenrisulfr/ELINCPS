@@ -11,6 +11,10 @@ namespace Elin_Course_Project_Service.Models
         public int CustomerID { get; set; }
         public string PaymentAccount { get; set; }
         public DateTime DateOfContractCompletion { get; set; }
+        public string Name { get; set; }
+        public string SecondName { get; set; }
+        public string Organization { get; set; }
+        public string Address { get; set; }
 
     }
 }

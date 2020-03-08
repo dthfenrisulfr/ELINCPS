@@ -28,4 +28,12 @@
     <Protobuf Include="Protos\CPS.proto" />
   </ItemGroup>
 
+
+
+  <ItemGroup>
+    <None Update="WindowsDataBase.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

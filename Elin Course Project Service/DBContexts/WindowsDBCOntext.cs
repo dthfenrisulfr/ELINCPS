@@ -15,7 +15,6 @@ namespace Elin_Course_Project_Service.DBContexts
         public DbSet<Products> Products { get; set; }
         public DbSet<Models.OrderModel> Orders { get; set; }
         public DbSet<Models.ProductsToOrders> ProductsToOrders {get;set;}
-        public DbSet<Models.CustomerInfo> CustomerInfo { get; set; }
 
         /// <summary>
         ///  Конфигуратор подключения к БД
@@ -33,8 +32,6 @@ namespace Elin_Course_Project_Service.DBContexts
         {
             modelBuilder.Entity<Positions>()
                 .HasKey(x => x.PositionID);
-            modelBuilder.Entity<Models.CustomerInfo>()
-                .HasKey(x => x.CustomerID);
             modelBuilder.Entity<Models.StaffModel>()
                 .HasKey(c => c.Passport);
             modelBuilder.Entity<Departments>()

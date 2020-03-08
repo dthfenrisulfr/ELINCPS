@@ -11,5 +11,6 @@ namespace Elin_Course_Project_Service.Models
 		public int CustomerID { get; set; }
 		public DateTime Date { get; set; }
 		public string Condition { get; set; }
+		public int StaffID { get; set; }
 	}
 }

@@ -8,6 +8,7 @@ service ELIN_CPS {
   rpc GetOneFromDepartment (DepartmentRequest) returns (Departments);
   rpc GetOneFormCustomers (CustomerRequest) returns (Customers); 
   rpc GetOneFromOrders (OrderRequest) returns (Orders);
+  rpc GetOneFromProducts (ProductRequest) returns (Products);
 
   rpc GetOrderList (OrderRequest) returns (stream Orders);
   rpc GetProductList (ProductRequest) returns (stream Products);
@@ -23,8 +24,6 @@ service ELIN_CPS {
   rpc AddPosition (Positions) returns (Response);
   rpc AddDepartment (Departments) returns (Response);
 
-  rpc DeleteOrder (OrderRequest) returns (Response);
-  rpc DeleteCustomer (CustomerRequest) returns (Response);
   rpc DeleteProduct (ProductRequest) returns (Response);
   rpc DeleteStaff (StaffRequest) returns (Response);
   rpc DeletePosition (PositionRequest) returns (Response);
@@ -69,6 +68,7 @@ message Orders{
 	int64 Date = 4;
 	string AllProducts = 5;
 	string Condition = 6;
+    Staff Staff = 7;
 }
 
 message Staff {
