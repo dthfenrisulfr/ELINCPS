@@ -518,7 +518,8 @@ namespace Elin_Course_Project_Service.Services
         var products = request.AllProducts.Split(',');
         foreach (var prod in products)
         {
-          cnt.ProductsToOrders.Add(new Models.ProductsToOrders { OrderID = updatedOrder.OrderID, ProductID = Convert.ToInt32(prod) });
+          var prodId = cnt.Products.Where(x => x.ProductName == prod).FirstOrDefault().ProductID;
+          cnt.ProductsToOrders.Add(new Models.ProductsToOrders { OrderID = updatedOrder.OrderID, ProductID = prodId });
           cnt.SaveChanges();
         }
         response.ResponseMessage = ResponseEnum.AddOk;
